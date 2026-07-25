@@ -1,0 +1,51 @@
+services:
+  ingestion-posts:
+    build:
+      context: .
+    restart: "no"
+    depends_on:
+      redpanda-topics:
+        condition: service_completed_successfully
+      clickhouse:
+        condition: service_healthy
+    environment:
+      TABLE: posts
+      YEAR: ${YEAR:-2020}
+      MAX_ROWS: ${MAX_ROWS:-200000}
+      SPEEDUP: ${SPEEDUP:-20000}
+      TOPIC_PREFIX: ${TOPIC_PREFIX:-so}
+      BROKER: ${BROKER:-redpanda:9092}
+
+  ingestion-votes:
+    build:
+      context: .
+    restart: "no"
+    depends_on:
+      redpanda-topics:
+        condition: service_completed_successfully
+      clickhouse:
+        condition: service_healthy
+    environment:
+      TABLE: votes
+      YEAR: ${YEAR:-2020}
+      MAX_ROWS: ${MAX_ROWS:-200000}
+      SPEEDUP: ${SPEEDUP:-20000}
+      TOPIC_PREFIX: ${TOPIC_PREFIX:-so}
+      BROKER: ${BROKER:-redpanda:9092}
+
+  ingestion-comments:
+    build:
+      context: .
+    restart: "no"
+    depends_on:
+      redpanda-topics:
+        condition: service_completed_successfully
+      clickhouse:
+        condition: service_healthy
+    environment:
+      TABLE: comments
+      YEAR: ${YEAR:-2020}
+      MAX_ROWS: ${MAX_ROWS:-200000}
+      SPEEDUP: ${SPEEDUP:-20000}
+      TOPIC_PREFIX: ${TOPIC_PREFIX:-so}
+      BROKER: ${BROKER:-redpanda:9092}

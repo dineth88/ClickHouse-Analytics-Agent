@@ -1,0 +1,38 @@
+# Our own analytics ClickHouse — separate from the internal ClickHouse that
+# Langfuse uses for trace storage (agent/docker-compose.agent.yml). Both are
+# named distinctly ("clickhouse" here vs "langfuse-clickhouse" in agent/) so
+# they can coexist in one merged Compose project.
+services:
+  clickhouse:
+    image: clickhouse/clickhouse-server:26.5.6.64
+    restart: unless-stopped
+    user: "101:101"
+    environment:
+      CLICKHOUSE_DB: default
+      CLICKHOUSE_USER: ${CLICKHOUSE_ANALYTICS_USER:-analytics}
+      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_ANALYTICS_PASSWORD:?set CLICKHOUSE_ANALYTICS_PASSWORD in .env}
+      CLICKHOUSE_MCP_READER_USER: ${CLICKHOUSE_MCP_READER_USER:-mcp_reader}
+      CLICKHOUSE_MCP_READER_PASSWORD: ${CLICKHOUSE_MCP_READER_PASSWORD:?set CLICKHOUSE_MCP_READER_PASSWORD in .env}
+    ports:
+      - "8123:8123" # HTTP
+      - "9000:9000" # native protocol
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+    volumes:
+      - clickhouse_data:/var/lib/clickhouse
+      - clickhouse_logs:/var/log/clickhouse-server
+      - ./init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8123/ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+
+volumes:
+  clickhouse_data:
+    driver: local
+  clickhouse_logs:
+    driver: local

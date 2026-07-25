@@ -1,0 +1,55 @@
+services:
+  redpanda:
+    image: redpandadata/redpanda:v26.1.14
+    restart: unless-stopped
+    command:
+      - redpanda
+      - start
+      - --kafka-addr internal://0.0.0.0:9092,external://0.0.0.0:19092
+      - --advertise-kafka-addr internal://redpanda:9092,external://localhost:19092
+      - --pandaproxy-addr internal://0.0.0.0:8082,external://0.0.0.0:18082
+      - --advertise-pandaproxy-addr internal://redpanda:8082,external://localhost:18082
+      - --schema-registry-addr internal://0.0.0.0:8081,external://0.0.0.0:18081
+      - --rpc-addr redpanda:33145
+      - --advertise-rpc-addr redpanda:33145
+      - --mode dev-container
+      - --smp 1
+      - --default-log-level=info
+    ports:
+      - "9092:9092"   # Kafka API (internal listener, used by ClickHouse/ingestion)
+      - "19092:19092" # Kafka API (external listener, for host-side rpk/tools)
+      - "9644:9644"   # admin API
+    volumes:
+      - redpanda_data:/var/lib/redpanda/data
+    healthcheck:
+      test: ["CMD-SHELL", "rpk cluster health | grep -E 'Healthy:.+true' || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+
+  # One-shot job: creates the so.posts/so.votes/so.comments topics, then exits.
+  redpanda-topics:
+    image: redpandadata/redpanda:v26.1.14
+    restart: "no"
+    depends_on:
+      redpanda:
+        condition: service_healthy
+    entrypoint: ["/bin/sh", "/bootstrap/create-topics.sh"]
+    volumes:
+      - ./bootstrap/create-topics.sh:/bootstrap/create-topics.sh:ro
+
+  redpanda-console:
+    image: redpandadata/console:v3.9.0
+    restart: unless-stopped
+    depends_on:
+      redpanda:
+        condition: service_healthy
+    environment:
+      KAFKA_BROKERS: redpanda:9092
+    ports:
+      - "${REDPANDA_CONSOLE_PORT:-8090}:8080"
+
+volumes:
+  redpanda_data:
+    driver: local

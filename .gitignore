@@ -1,3 +1,22 @@
+# ============================================
+# Secrets — never commit these (Phase 0 hygiene)
+# ============================================
+.env
+.env.*
+!.env.example
+**/credentials.json
+!agent/credentials.json.example
+**/auth.json
+*.pem
+*.key
+*.p12
+
+# ============================================
+# Data / runtime volumes
+# ============================================
+ingestion/data/
+*.parquet
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]

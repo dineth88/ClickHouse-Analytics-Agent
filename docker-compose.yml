@@ -1,0 +1,13 @@
+# Top-level orchestrator. `include:` merges every sub-project's services,
+# networks, and volumes into one Compose project so they can all reach each
+# other by service name. Run everything from the repo root:
+#   docker-compose --env-file .env up -d
+include:
+  - clickhouse/docker-compose.clickhouse.yml
+  - redpanda/docker-compose.redpanda.yml
+  - ingestion/docker-compose.ingestion.yml
+  - grafana/docker-compose.grafana.yml
+  - agent/docker-compose.langfuse.yml
+  - agent/docker-compose.mcp.yml
+  - agent/docker-compose.librechat.yml
+  - agent/docker-compose.admin-panel.yml

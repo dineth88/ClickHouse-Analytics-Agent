@@ -1,0 +1,103 @@
+{
+  "id": null,
+  "uid": "so-realtime-analytics",
+  "title": "StackOverflow Real-Time Analytics",
+  "tags": ["clickhouse", "stackoverflow"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "5s",
+  "time": { "from": "now-15m", "to": "now" },
+  "panels": [
+    {
+      "id": 1,
+      "title": "Posts / min (right now)",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse-analytics" },
+      "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+      "targets": [
+        {
+          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse-analytics" },
+          "editorType": "sql",
+          "format": 1,
+          "rawSql": "SELECT minute, sum(cnt) AS posts FROM stackoverflow.posts_per_minute WHERE $__timeFilter(minute) GROUP BY minute ORDER BY minute",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Top Tags",
+      "type": "barchart",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse-analytics" },
+      "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
+      "options": { "orientation": "horizontal", "xTickLabelRotation": 0 },
+      "targets": [
+        {
+          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse-analytics" },
+          "editorType": "sql",
+          "format": 0,
+          "rawSql": "SELECT tag, sum(cnt) AS cnt FROM stackoverflow.posts_by_tag_minute WHERE $__timeFilter(minute) GROUP BY tag ORDER BY cnt DESC LIMIT 10",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Votes / min",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse-analytics" },
+      "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+      "targets": [
+        {
+          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse-analytics" },
+          "editorType": "sql",
+          "format": 1,
+          "rawSql": "SELECT minute, sum(cnt) AS votes FROM stackoverflow.votes_per_minute WHERE $__timeFilter(minute) GROUP BY minute ORDER BY minute",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Questions vs Answers Ratio",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse-analytics" },
+      "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+      "targets": [
+        {
+          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse-analytics" },
+          "editorType": "sql",
+          "format": 1,
+          "rawSql": "SELECT minute, sumIf(cnt, PostTypeId = 1) AS questions, sumIf(cnt, PostTypeId = 2) AS answers FROM stackoverflow.posts_per_minute WHERE $__timeFilter(minute) GROUP BY minute ORDER BY minute",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Running Total Posts",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 16 },
+      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse-analytics" },
+      "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+      "targets": [
+        {
+          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse-analytics" },
+          "editorType": "sql",
+          "format": 1,
+          "rawSql": "SELECT minute, sum(sum(cnt)) OVER (ORDER BY minute) AS running_total FROM stackoverflow.posts_per_minute WHERE $__timeFilter(minute) GROUP BY minute ORDER BY minute",
+          "refId": "A"
+        }
+      ]
+    }
+  ]
+}
