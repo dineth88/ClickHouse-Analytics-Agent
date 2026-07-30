@@ -92,6 +92,8 @@ docker exec -it $(docker ps -qf name=^redpanda$) rpk topic consume so.posts -n 5
 
 ## Phase 3 — Ingestion (replayer + Kafka engine + MVs)
 
+**If a ClickHouse restart ever leaves the rollups stuck (raw tables growing, `posts_per_minute`/`votes_per_minute`/`posts_by_tag_minute` not):** this was an early bug — see the "event time vs ingestion time" and Kafka-fan-out notes in `docs/LEARNING.md`. It's fixed in the current schema (rollups chain off the raw tables, not off the Kafka queue directly), so a fresh `make up` won't hit it. If you're troubleshooting an existing deployment, `SELECT count(), max(minute) FROM stackoverflow.posts_per_minute` vs `SELECT count() FROM stackoverflow.posts` will tell you if they've diverged.
+
 **Start a replay** (needs ClickHouse + Redpanda already up — Phases 1-2, or just run `make up` for the whole stack):
 
 ```bash

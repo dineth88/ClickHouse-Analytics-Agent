@@ -13,6 +13,11 @@ services:
       CLICKHOUSE_PASSWORD: ${CLICKHOUSE_ANALYTICS_PASSWORD:?set CLICKHOUSE_ANALYTICS_PASSWORD in .env}
       CLICKHOUSE_MCP_READER_USER: ${CLICKHOUSE_MCP_READER_USER:-mcp_reader}
       CLICKHOUSE_MCP_READER_PASSWORD: ${CLICKHOUSE_MCP_READER_PASSWORD:?set CLICKHOUSE_MCP_READER_PASSWORD in .env}
+      # Without this, ClickHouse (v22+) does NOT grant the bootstrap user
+      # ACCESS MANAGEMENT rights even with a full "GRANT ALL" — so
+      # 05-create-mcp-reader.sh's CREATE USER would silently fail with
+      # ACCESS_DENIED and mcp_reader would never actually get created.
+      CLICKHOUSE_ACCESS_MANAGEMENT: "1"
     ports:
       - "8123:8123" # HTTP
       - "9000:9000" # native protocol
