@@ -66,6 +66,11 @@ make up     # brings up the whole stack, builds the ingestion image, waits for h
 | Langfuse | http://localhost:3002 |
 | LibreChat Admin Panel | http://localhost:3081 |
 
+<img width="1681" height="923" alt="Image" src="https://github.com/user-attachments/assets/d37cc2de-98e6-481f-851f-2eb5cb6f0717" />
+<img width="1415" height="915" alt="Image" src="https://github.com/user-attachments/assets/de82449d-f3bb-44d7-9c78-3ba1cb566822" />
+<img width="1728" height="961" alt="Image" src="https://github.com/user-attachments/assets/4ec406ea-9eb5-42e3-85a7-ae3dba9ecdcf" />
+<img width="1409" height="888" alt="Image" src="https://github.com/user-attachments/assets/3bd52155-a0e1-40d0-b832-d77716ecf841" />
+
 ## Docs
 
 - [`docs/LEARNING.md`](docs/LEARNING.md) — what every component is and why, phase by phase
