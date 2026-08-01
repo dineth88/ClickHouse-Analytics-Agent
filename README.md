@@ -70,6 +70,7 @@ make up     # brings up the whole stack, builds the ingestion image, waits for h
 <img width="1415" height="915" alt="Image" src="https://github.com/user-attachments/assets/de82449d-f3bb-44d7-9c78-3ba1cb566822" />
 <img width="1728" height="961" alt="Image" src="https://github.com/user-attachments/assets/4ec406ea-9eb5-42e3-85a7-ae3dba9ecdcf" />
 <img width="1409" height="888" alt="Image" src="https://github.com/user-attachments/assets/3bd52155-a0e1-40d0-b832-d77716ecf841" />
+<img width="1414" height="911" alt="Image" src="https://github.com/user-attachments/assets/15bef716-79f3-47b1-bed0-dd1772c4adc2" />
 
 ## Docs
 
